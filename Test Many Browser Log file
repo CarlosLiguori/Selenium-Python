@@ -1,0 +1,73 @@
+#Sep/2020
+# Test: Open Browsers and test with Google page, verify if the request was correct sent.
+#Log File included
+
+from time import sleep
+from pprint import pprint
+from selenium import webdriver
+from urllib.parse import urlparse
+import datetime
+import re
+
+browser = list(str())
+browser_list = [webdriver.Firefox(), webdriver.Ie(), webdriver.Opera()]
+#browser_list = [webdriver.Opera()]
+browser_names = ['Firefox', 'Ie', 'Opera']
+a = dict()
+b = str
+filetype = '.png'
+
+for browser in browser_list:
+    browser.maximize_window()
+    browser.get('http://www.google.com')
+
+
+print('Browser Open!')
+print()
+
+
+assunto = input('Search Google or type url: ')
+print()
+
+logfile = open('LogFile1.txt', 'w')  # Log File "LogFile.txt
+print('Log file for script: "Test Many Browser Same Time Google"\n', file=logfile)
+print(f'Test time: {datetime.datetime.now()}', file=logfile)
+print('', file=logfile)
+print(f'Subject: {assunto}\n', file=logfile)
+
+k = 0
+
+for browser in browser_list:
+    janela = browser.find_element_by_name('q')
+    janela.send_keys(assunto)
+    janela.submit()
+    sleep(1)
+    a = urlparse(browser.current_url)
+    print(f'Browser: {browser}\n', file=logfile)
+    print(f'url: {a}\n', file=logfile)
+
+
+    b = a[4]
+    print(b)
+    b = a[4].replace("+", " ")  # Remove Special Chars '+' from url
+    c = b.count(assunto)        # Verify how many times the 'search' shows on the url. If = 1 then search was sent correctly)
+
+    if c == 1:
+        print(f'The search/url "{assunto}" shows {c} times on the url. '
+                      f'The Browser "{browser}" requested was concluded CORRECTELY!\n', file=logfile)
+        print('_' * 50, file=logfile)
+        print('', file=logfile)
+        screenshot_name = browser_names[k] + filetype
+        browser.save_screenshot(screenshot_name)
+        k += 1
+    else:
+        print(f'The search/url "{assunto}" is NOT on the url, ERROR on Browser "{browser}"!\n', file=logfile)
+        print('_' * 50, file=logfile)
+        print('', file=logfile)
+        k += 1
+
+logfile.close()
+
+print()
+
+print('*** END ***')
